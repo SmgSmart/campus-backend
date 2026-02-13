@@ -1,0 +1,102 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  password  String
+  name      String?
+  role      Role     @default(STUDENT)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  feedback  Feedback[]
+}
+
+enum Role {
+  STUDENT
+  ADMIN
+  GUEST
+}
+
+model Building {
+  id          String   @id @default(uuid())
+  name        String
+  description String?
+  latitude    Float
+  longitude   Float
+  imageUrl    String?
+  categoryId  String?
+  category    Category? @relation(fields: [categoryId], references: [id])
+  floors      Floor[]
+  rooms       Room[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Category {
+  id        String     @id @default(uuid())
+  name      String     @unique
+  icon      String?    // Lucide icon name
+  buildings Building[]
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+}
+
+model Floor {
+  id          String   @id @default(uuid())
+  level       Int
+  buildingId  String
+  building    Building @relation(fields: [buildingId], references: [id], onDelete: Cascade)
+  mapImageUrl String?
+  rooms       Room[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Room {
+  id          String   @id @default(uuid())
+  name        String
+  type        String?  // Classrooms, Lab, Office, etc.
+  buildingId  String
+  building    Building @relation(fields: [buildingId], references: [id], onDelete: Cascade)
+  floorId     String
+  floor       Floor    @relation(fields: [floorId], references: [id])
+  latitude    Float?
+  longitude   Float?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model NavigationPath {
+  id          String   @id @default(uuid())
+  fromName    String
+  toName      String
+  pathData    Json     // Array of coordinates or steps
+  distance    Float
+  estimatedTime Int    // In seconds
+  createdAt   DateTime @default(now())
+}
+
+model Feedback {
+  id        String   @id @default(uuid())
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id])
+  content   String
+  rating    Int
+  createdAt DateTime @default(now())
+}
+
+model Analytics {
+  id          String   @id @default(uuid())
+  eventType   String   // location_usage, search, nav_start, nav_end
+  eventData   Json
+  timestamp   DateTime @default(now())
+}
