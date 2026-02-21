@@ -13,10 +13,11 @@ router.post('/auth/register', register);
 router.post('/auth/login', login);
 
 // Profile routes
-import { getProfile, updateProfile } from '../controllers/userController';
+import { getProfile, updateProfile, changePassword } from '../controllers/userController';
 import { userAuth } from '../middleware/userAuth';
 router.get('/auth/profile', userAuth, getProfile);
 router.put('/auth/profile', userAuth, updateProfile);
+router.post('/auth/change-password', userAuth, changePassword);
 
 // Building routes
 router.get('/buildings', getAllBuildings);

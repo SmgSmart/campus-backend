@@ -10,14 +10,18 @@ datasource db {
 }
 
 model User {
-  id        String   @id @default(uuid())
-  email     String   @unique
-  password  String
-  name      String?
-  role      Role     @default(STUDENT)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  feedback  Feedback[]
+  id           String   @id @default(uuid())
+  email        String   @unique
+  password     String
+  name         String?
+  studentId    String?
+  department   String?
+  course       String?
+  avatarUrl    String?
+  role         Role     @default(STUDENT)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  feedback     Feedback[]
 }
 
 enum Role {
