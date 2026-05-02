@@ -1,0 +1,22 @@
+# Dependencies
+node_modules/
+dist/
+
+# Environment Variables
+.env
+secret.key
+
+# Prisma
+/prisma/dev.db
+/prisma/dev.db-journal
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+logs/
+*.log
