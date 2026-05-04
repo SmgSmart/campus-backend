@@ -36,6 +36,7 @@ model Building {
   description String?
   latitude    Float
   longitude   Float
+  geometry    Json?    // Array of polygon coordinates
   imageUrl    String?
   categoryId  String?
   category    Category? @relation(fields: [categoryId], references: [id])
@@ -61,6 +62,7 @@ model Floor {
   building    Building @relation(fields: [buildingId], references: [id], onDelete: Cascade)
   mapImageUrl String?
   rooms       Room[]
+  nodes       MapNode[]
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }
@@ -75,8 +77,57 @@ model Room {
   floor       Floor    @relation(fields: [floorId], references: [id])
   latitude    Float?
   longitude   Float?
+  nodeId      String?  @unique
+  node        MapNode? @relation(fields: [nodeId], references: [id])
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+}
+
+model MapNode {
+  id        String   @id @default(uuid())
+  latitude  Float
+  longitude Float
+  floorId   String?
+  floor     Floor?   @relation(fields: [floorId], references: [id])
+  type      NodeType @default(INTERSECTION)
+  
+  // Relations
+  outgoingEdges MapEdge[] @relation("EdgeStart")
+  incomingEdges MapEdge[] @relation("EdgeEnd")
+  room          Room?
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+enum NodeType {
+  INTERSECTION
+  ENTRANCE
+  POI
+  STAIRS
+  ELEVATOR
+}
+
+model MapEdge {
+  id           String   @id @default(uuid())
+  startNodeId  String
+  startNode    MapNode  @relation("EdgeStart", fields: [startNodeId], references: [id])
+  endNodeId    String
+  endNode      MapNode  @relation("EdgeEnd", fields: [endNodeId], references: [id])
+  distance     Float    // Pre-calculated weight (meters)
+  type         EdgeType @default(WALKWAY)
+  isAccessible Boolean  @default(true)
+  geometry     Json?    // Array of coordinates for the polyline
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+enum EdgeType {
+  WALKWAY
+  STAIRS
+  ELEVATOR
+  INDOOR
 }
 
 model NavigationPath {

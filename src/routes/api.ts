@@ -29,6 +29,11 @@ router.get('/rooms', getRooms);
 // Path routes
 router.get('/paths', getPaths);
 
+// Navigation routes
+import { findPath, getMapData } from '../controllers/navigationController';
+router.get('/map/data', getMapData);
+router.post('/navigation/find-path', findPath);
+
 // Feedback & Analytics
 router.post('/feedback', postFeedback);
 router.post('/analytics/location-usage', postAnalytics);
